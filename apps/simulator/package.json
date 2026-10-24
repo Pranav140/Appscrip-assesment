@@ -1,0 +1,25 @@
+{
+  "name": "@rtops/simulator",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "build": "tsc -b",
+    "dev": "tsx src/index.ts",
+    "start": "node dist/index.js",
+    "scenario:normal": "tsx src/index.ts --scenario normal",
+    "scenario:offline": "tsx src/index.ts --scenario offline-reconnect",
+    "scenario:duplicates": "tsx src/index.ts --scenario duplicates",
+    "scenario:out-of-order": "tsx src/index.ts --scenario out-of-order",
+    "scenario:burst": "tsx src/index.ts --scenario burst",
+    "scenario:malformed": "tsx src/index.ts --scenario malformed",
+    "scenario:abnormal": "tsx src/index.ts --scenario abnormal-readings"
+  },
+  "dependencies": {
+    "@rtops/shared": "*"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.1",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2"
+  }
+}
