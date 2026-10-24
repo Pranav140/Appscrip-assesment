@@ -114,6 +114,6 @@ Expected output:
 - **[Device Protocol](docs/PROTOCOL.md)**: Wire protocol, batch schemas, and retry semantics.
 - **[Reliability Failure Matrix](docs/RELIABILITY.md)**: "What happens when X fails?" coverage table.
 - **[Production Deployment & Scaling](docs/DEPLOYMENT.md)**: ECS/EKS topology, Kafka migration path, and alert rules.
-- **[10-Minute Demo Script](docs/DEMO.md)**: Step-by-step evaluator presentation guide.
-- **[Viva & Interview Preparation](docs/VIVA_NOTES.md)**: 15 crisp architectural questions and answers.
+- **[10-Minute Demo Script](docs/DEMO.md)**: Step-by-step presentation and verification guide.
+- **[Test & Scenario Verification](docs/TESTING.md)**: Failure scenarios, edge cases, and test mapping.
 - **[Platform Limitations](docs/LIMITATIONS.md)**: Honest disclosure of trade-offs and future work.
