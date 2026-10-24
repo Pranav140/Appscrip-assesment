@@ -1,0 +1,141 @@
+version: '3.9'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: rtops-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: rtops
+      POSTGRES_USER: rtops
+      POSTGRES_PASSWORD: rtops_dev_password
+    ports:
+      - '5432:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U rtops -d rtops']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+
+  api:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    container_name: rtops-api
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://rtops:rtops_dev_password@postgres:5432/rtops
+      API_PORT: 3000
+      API_HOST: 0.0.0.0
+      NODE_ENV: production
+      OPERATOR_TOKEN: ${OPERATOR_TOKEN:-dev-operator-token-change-in-prod}
+      ADMIN_TOKEN: ${ADMIN_TOKEN:-dev-admin-token-change-in-prod}
+      HIGH_WATERMARK: ${HIGH_WATERMARK:-5000}
+      HARD_WATERMARK: ${HARD_WATERMARK:-10000}
+      REPLAY_THRESHOLD_SECONDS: ${REPLAY_THRESHOLD_SECONDS:-120}
+      MAX_FUTURE_SECONDS: ${MAX_FUTURE_SECONDS:-86400}
+      LOG_LEVEL: ${LOG_LEVEL:-info}
+    ports:
+      - '3000:3000'
+    networks:
+      - rtops-net
+
+  worker:
+    build:
+      context: .
+      dockerfile: apps/worker/Dockerfile
+    container_name: rtops-worker
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://rtops:rtops_dev_password@postgres:5432/rtops
+      NODE_ENV: production
+      WORKER_CONCURRENCY: ${WORKER_CONCURRENCY:-4}
+      WORKER_BATCH_SIZE: ${WORKER_BATCH_SIZE:-20}
+      POLL_INTERVAL_MS: ${POLL_INTERVAL_MS:-1000}
+      WORKER_LEASE_SECONDS: ${WORKER_LEASE_SECONDS:-30}
+      MAX_ATTEMPTS: ${MAX_ATTEMPTS:-5}
+      STALE_AFTER_SECONDS: ${STALE_AFTER_SECONDS:-30}
+      OFFLINE_AFTER_SECONDS: ${OFFLINE_AFTER_SECONDS:-90}
+      SCHEDULER_INTERVAL_MS: ${SCHEDULER_INTERVAL_MS:-5000}
+      STARTUP_GRACE_SECONDS: ${STARTUP_GRACE_SECONDS:-180}
+      MAX_NOTIFY_ATTEMPTS: ${MAX_NOTIFY_ATTEMPTS:-8}
+      NOTIFY_WEBHOOK_URL: http://webhook-sink:4000/notify
+      CIRCUIT_BREAKER_K: ${CIRCUIT_BREAKER_K:-5}
+      CIRCUIT_BREAKER_COOL_OFF_SECONDS: ${CIRCUIT_BREAKER_COOL_OFF_SECONDS:-60}
+      RULE_CACHE_TTL_MS: ${RULE_CACHE_TTL_MS:-5000}
+      TRACE_ALL_EVALUATIONS: ${TRACE_ALL_EVALUATIONS:-false}
+      LOG_LEVEL: ${LOG_LEVEL:-info}
+    networks:
+      - rtops-net
+
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+    container_name: rtops-web
+    restart: unless-stopped
+    depends_on:
+      - api
+    environment:
+      VITE_API_URL: http://localhost:3000
+      VITE_OPERATOR_TOKEN: ${OPERATOR_TOKEN:-dev-operator-token-change-in-prod}
+    ports:
+      - '5173:80'
+    networks:
+      - rtops-net
+
+  webhook-sink:
+    build:
+      context: .
+      dockerfile: apps/webhook-sink/Dockerfile
+    container_name: rtops-webhook-sink
+    restart: unless-stopped
+    environment:
+      WEBHOOK_SINK_PORT: 4000
+      LOG_LEVEL: ${LOG_LEVEL:-info}
+    ports:
+      - '4000:4000'
+    networks:
+      - rtops-net
+
+  # Optional monitoring profile
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: rtops-prometheus
+    profiles: ['monitoring']
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - '9090:9090'
+    networks:
+      - rtops-net
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: rtops-grafana
+    profiles: ['monitoring']
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: admin
+    volumes:
+      - ./monitoring/grafana-dashboards:/var/lib/grafana/dashboards
+      - ./monitoring/grafana-datasources.yml:/etc/grafana/provisioning/datasources/datasources.yml
+    ports:
+      - '3001:3000'
+    networks:
+      - rtops-net
+
+volumes:
+  postgres_data:
+
+networks:
+  rtops-net:
+    driver: bridge

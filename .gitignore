@@ -1,0 +1,13 @@
+node_modules/
+dist/
+.env
+*.local
+coverage/
+.nyc_output/
+logs/
+*.log
+.DS_Store
+Thumbs.db
+device-buffers/
+*.jsonl
+!apps/simulator/src/test-fixtures/*.jsonl

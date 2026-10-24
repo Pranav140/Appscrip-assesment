@@ -1,0 +1,39 @@
+{
+  "name": "realtime-ops-platform",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "build": "npm run build --workspaces --if-present",
+    "dev": "npm run dev --workspace=apps/api",
+    "dev:worker": "npm run dev --workspace=apps/worker",
+    "dev:web": "npm run dev --workspace=apps/web",
+    "dev:simulator": "npm run dev --workspace=apps/simulator",
+    "dev:sink": "npm run dev --workspace=apps/webhook-sink",
+    "test": "npm run test --workspaces --if-present",
+    "db:migrate": "tsx packages/db/src/migrate.ts",
+    "db:reset": "tsx packages/db/src/reset.ts",
+    "seed": "tsx scripts/seed.ts",
+    "compose:up": "docker compose up -d",
+    "compose:down": "docker compose down",
+    "compose:build": "docker compose up --build",
+    "reconcile": "tsx scripts/reconcile.ts"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "@typescript-eslint/eslint-plugin": "^7.0.0",
+    "@typescript-eslint/parser": "^7.0.0",
+    "eslint": "^8.56.0",
+    "eslint-config-prettier": "^9.1.0",
+    "prettier": "^3.2.5",
+    "tsx": "^4.7.0",
+    "typescript": "^5.3.3",
+    "vitest": "^1.2.0"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}
