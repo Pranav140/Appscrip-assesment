@@ -13,5 +13,6 @@ device-buffers/
 scripts/device-credentials.json
 user-notes/
 internal-notes/
+CLAUDE.md
 *.jsonl
 !apps/simulator/src/test-fixtures/*.jsonl
