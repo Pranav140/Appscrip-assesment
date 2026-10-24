@@ -20,7 +20,14 @@
     "compose:up": "docker compose up -d",
     "compose:down": "docker compose down",
     "compose:build": "docker compose up --build",
-    "reconcile": "tsx scripts/reconcile.ts"
+    "reconcile": "tsx scripts/reconcile.ts",
+    "scenario:normal": "npm run scenario:normal --workspace=apps/simulator",
+    "scenario:offline": "npm run scenario:offline --workspace=apps/simulator",
+    "scenario:duplicates": "npm run scenario:duplicates --workspace=apps/simulator",
+    "scenario:out-of-order": "npm run scenario:out-of-order --workspace=apps/simulator",
+    "scenario:burst": "npm run scenario:burst --workspace=apps/simulator",
+    "scenario:malformed": "npm run scenario:malformed --workspace=apps/simulator",
+    "scenario:abnormal": "npm run scenario:abnormal --workspace=apps/simulator"
   },
   "devDependencies": {
     "@types/node": "^20.11.0",
