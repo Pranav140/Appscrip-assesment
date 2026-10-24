@@ -2,6 +2,8 @@
 
 A resilient, production-grade real-time operations platform for managing fleet telemetry, automated alert rules, deduplicated incidents, and live operational monitoring under extreme network and system faults.
 
+> 📄 **Evaluation Document**: Read the complete architectural rationale, concurrency invariants, and technical trade-offs in [**ARCHITECTURE_NOTES.md**](ARCHITECTURE_NOTES.md).
+
 ---
 
 ## 🌟 Key Features & Reliability Guarantees
