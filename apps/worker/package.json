@@ -1,0 +1,24 @@
+{
+  "name": "@rtops/worker",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "build": "tsc -b",
+    "dev": "tsx watch src/index.ts",
+    "start": "node dist/index.js"
+  },
+  "dependencies": {
+    "@rtops/db": "*",
+    "@rtops/shared": "*",
+    "pg": "^8.13.1",
+    "prom-client": "^15.1.3",
+    "undici": "^6.20.1",
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.1",
+    "@types/pg": "^8.11.10",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2"
+  }
+}
